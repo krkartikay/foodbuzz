@@ -1,0 +1,8 @@
+1. /userinfo
+2. /login                     methods=["POST"]
+3. /logout                    methods=["GET", "POST"]
+4. /vendors
+5. /products/<int:vid>
+6. /placeOrder                methods=["POST"]
+7. /orders/<int:uid>
+8. /status/<int:oid>

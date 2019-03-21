@@ -60,7 +60,7 @@ def authorize(f):
 @app.route('/userinfo')
 def userinfo():
 	if 'uid' in session and session['uid'] != None:
-		udata = dict(query_db("SELECT email, balance FROM users WHERE uid = ?",
+		udata = dict(query_db("SELECT uid, email, balance FROM users WHERE uid = ?",
 						 [session['uid']], one=True))
 		return jsonify({"loggedin": True, "uid": session['uid'], "user_data":udata})
 	else:
@@ -87,14 +87,14 @@ def logout():
 def vendors():
 	vds = dict()
 	for row in query_db("SELECT contact_no,name,open,photoURL,vid FROM vendors"):
-		vds[row['vid']] = [dict(row)]
+		vds[row['vid']] = dict(row)
 	return jsonify(vds)
 
 @app.route('/products/<int:vid>')
 def products(vid):
 	pds = dict()
 	for row in query_db("SELECT * FROM products WHERE vid=?", [vid]):
-		pds[row['pid']] = [dict(row)]
+		pds[row['pid']] = dict(row)
 	return jsonify(pds)
 
 @app.route('/placeOrder', methods=["POST"])
@@ -148,7 +148,7 @@ def orders(uid):
 						as status FROM orders WHERE uid=? GROUP BY oid", [uid])
 	ods = dict()
 	for row in orders:
-		ods[row['oid']] = [dict(row)]
+		ods[row['oid']] = dict(row)
 	return jsonify(ods)
 
 @app.route('/status/<int:oid>')
