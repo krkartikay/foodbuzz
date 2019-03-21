@@ -1,3 +1,4 @@
+import time
 import sqlite3
 import bcrypt
 from flask import *
@@ -35,10 +36,14 @@ def check_pwd(pwd, hash_):
 
 @app.route('/userinfo')
 def userinfo():
-	return jsonify({"loggedin": True, "uid": 1})
+	if 'uid' in session:
+		return jsonify({"loggedin": True, "uid": session['uid']})
+	else:
+		return jsonify({"loggedin": False, "uid": None})
 
 @app.route('/login')
 def login():
+	session['uid'] = 1
 	return jsonify({"success": True})
 
 @app.route('/logout')
@@ -61,7 +66,41 @@ def products(vid):
 
 @app.route('/placeOrder', methods=["POST"])
 def placeOrder():
-	return jsonify({"success": True})
+	data = request.get_json()
+	# TODO LATER: should use transactions here
+	try:
+
+		if data['uid'] != session['uid']:
+			abort(401)
+
+		total_price = 0
+		for pid in data['order']:
+			qty = data['order'][pid]
+			price1 = query_db("SELECT price FROM products WHERE pid=?;", pid, one=True)[0]
+			total_price += qty * price1
+
+		acc_balance = query_db("SELECT balance FROM users WHERE uid=?;", [session['uid']], one=True)[0]
+		if acc_balance < total_price:
+			abort(400, "Insufficient account balance")
+		
+		m_oid = query_db("SELECT MAX(oid) FROM orders;", one=True)[0]
+		oid = m_oid + 1 if m_oid is not None else 1
+		vid = data['vid']
+
+		conn = get_db()
+		c = conn.cursor()
+		for pid in data['order']:
+			qty = data['order'][pid]
+			o_data = [oid, session['uid'], vid, pid, qty, int(time.time()), 0]
+			c.execute("INSERT INTO orders VALUES (?,?,?,?,?,?,?);", o_data)
+			c.execute("UPDATE products SET qty_left = qty_left-?;", [qty])
+		c.execute("UPDATE users SET balance=?", [acc_balance - total_price])
+		conn.commit()
+		conn.close()
+
+		return jsonify({"success": True, "oid": oid})
+	except KeyError:
+		abort(400)
 
 @app.route('/orders/<int:uid>')
 def orders(uid):

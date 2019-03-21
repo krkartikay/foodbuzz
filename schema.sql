@@ -52,7 +52,7 @@ CREATE TABLE `orders` (
   `qty` INTEGER NULL DEFAULT NULL,
   `timestamp` TIMESTAMP NULL DEFAULT NULL,
   `status` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`oid`)
+  PRIMARY KEY (`oid`,`pid`)
 );
 
 -- ---
