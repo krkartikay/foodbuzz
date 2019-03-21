@@ -53,7 +53,7 @@ def logout():
 @app.route('/vendors')
 def vendors():
 	vds = dict()
-	for row in query_db("SELECT * FROM vendors;"):
+	for row in query_db("SELECT * FROM vendors"):
 		vds[row['vid']] = [dict(row)]
 	return jsonify(vds)
 
@@ -76,14 +76,15 @@ def placeOrder():
 		total_price = 0
 		for pid in data['order']:
 			qty = data['order'][pid]
-			price1 = query_db("SELECT price FROM products WHERE pid=?;", pid, one=True)[0]
+			price1 = query_db("SELECT price FROM products WHERE pid=?", pid, one=True)[0]
 			total_price += qty * price1
 
-		acc_balance = query_db("SELECT balance FROM users WHERE uid=?;", [session['uid']], one=True)[0]
+		# TODO: SOME MORE TESTING, qty > 0 etc
+		acc_balance = query_db("SELECT balance FROM users WHERE uid=?", [session['uid']], one=True)[0]
 		if acc_balance < total_price:
 			abort(400, "Insufficient account balance")
 		
-		m_oid = query_db("SELECT MAX(oid) FROM orders;", one=True)[0]
+		m_oid = query_db("SELECT MAX(oid) FROM orders", one=True)[0]
 		oid = m_oid + 1 if m_oid is not None else 1
 		vid = data['vid']
 
@@ -91,20 +92,28 @@ def placeOrder():
 		c = conn.cursor()
 		for pid in data['order']:
 			qty = data['order'][pid]
-			o_data = [oid, session['uid'], vid, pid, qty, int(time.time()), 0]
-			c.execute("INSERT INTO orders VALUES (?,?,?,?,?,?,?);", o_data)
-			c.execute("UPDATE products SET qty_left = qty_left-?;", [qty])
+			o_data = [oid, session['uid'], vid, pid, qty, int(time.time()), 0, total_price] # 0 = status
+			c.execute("INSERT INTO orders VALUES (?,?,?,?,?,?,?,?)", o_data)
+			c.execute("UPDATE products SET qty_left = qty_left-? WHERE pid=?", [qty, pid])
 		c.execute("UPDATE users SET balance=?", [acc_balance - total_price])
 		conn.commit()
 		conn.close()
 
 		return jsonify({"success": True, "oid": oid})
+	
 	except KeyError:
 		abort(400)
 
 @app.route('/orders/<int:uid>')
 def orders(uid):
-	return jsonify({"success": True})
+	if uid != session['uid']:
+		abort(401)
+	orders = query_db("SELECT oid, timestamp, totalprice, SUM(status)/count(status) \
+						as status FROM orders WHERE uid=? GROUP BY oid", [uid])
+	ods = dict()
+	for row in orders:
+		ods[row['oid']] = [dict(row)]
+	return jsonify(ods)
 
 @app.route('/status/<int:oid>')
 def status(oid):
