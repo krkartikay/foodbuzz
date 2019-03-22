@@ -36,7 +36,7 @@ class Vendors {
   Vendors();
 
   Future<void> loadVendors() {
-    return Requests.get(BACKEND + "/vendors/").then((resp) {
+    return Requests.get(BACKEND + "/vendors").then((resp) {
       Map<String, dynamic> data = jsonDecode(resp);
       for (var vid in data.keys) {
         mp[int.parse(vid)] = Vendor.fromJson(data[vid]);

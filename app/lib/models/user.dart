@@ -53,6 +53,6 @@ class UserModel {
       BACKEND + "/logout",
     ).catchError((error){
       print("error in reloaduser, $error");
-    });;
+    });
   }
 }
