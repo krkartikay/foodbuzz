@@ -59,12 +59,15 @@ def authorize(f):
 
 @app.route('/userinfo')
 def userinfo():
+	time.sleep(1)
 	if 'uid' in session and session['uid'] != None:
 		udata = dict(query_db("SELECT uid, email, balance FROM users WHERE uid = ?",
 						 [session['uid']], one=True))
 		return jsonify({"loggedin": True, "uid": session['uid'], "user_data":udata})
 	else:
 		return jsonify({"loggedin": False, "uid": None})
+
+# TODO: /register route too
 
 @app.route('/login', methods=["POST"])
 def login():

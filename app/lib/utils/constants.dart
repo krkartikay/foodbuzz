@@ -1,3 +1,3 @@
 // GLOBAL CONSTANTS
 
-const String BACKEND = "http://127.0.0.1:5000";
+const String BACKEND = "http://192.168.225.242:5000";
