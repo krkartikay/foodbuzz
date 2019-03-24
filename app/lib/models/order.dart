@@ -53,6 +53,7 @@ class RecievedOrderDetails {
 class CreatedOrder {
   final int vid;
   Map<int, int> qty = {};
+  Map<int, Product> products = {};
   int totalPrice = 0;
   
   // TODO: time estimate logic
@@ -67,16 +68,27 @@ class CreatedOrder {
     });
   }
 
-  void addProduct(Product p){
-    qty[p.pid] ++;
-    totalPrice += p.price;
-  }
-  void removeProduct(Product p){
-    qty[p.pid] --;
-    totalPrice -= p.price;
+  // void addProduct(Product p){
+  //   qty[p.pid] ++;
+  //   totalPrice += p.price;
+  // }
+  // void removeProduct(Product p){
+  //   qty[p.pid] --;
+  //   totalPrice -= p.price;
+  // }
+
+  void setQty(Product p, int val){
+    qty[p.pid] = val;
+    products[p.pid] = p;
+    totalPrice = 0;
+    for (var pid in products.keys) {
+      totalPrice += qty[pid] * products[pid].price;
+    }
   }
 
-  Future<void> placeOrder(){
-    return Requests.post(BACKEND+"/placeOrder", json: this.toJson());
+  Future<int> placeOrder(){
+    return Requests.post(BACKEND+"/placeOrder", json: this.toJson()).then((resp) {
+      return jsonDecode(resp)['oid'];
+    });
   }
 }

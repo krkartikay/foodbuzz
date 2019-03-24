@@ -66,6 +66,8 @@ class _ActualLoginPageState extends State<ActualLoginPage> {
           onPressed: () {
             widget.login("kk@g.com", "hunter2").then((_) {
               Navigator.pop(context);
+            }).catchError((_){
+              print("error logging in!");
             });
           },
         ),

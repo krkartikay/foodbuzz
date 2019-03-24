@@ -44,6 +44,7 @@ class Product {
 class Products {
   final int vid;
   final Map<int, Product> mp = {};
+  final Map<String, List<int>> types = {};
   bool loaded = false;
 
   Products(this.vid);
@@ -52,7 +53,12 @@ class Products {
     return Requests.get(BACKEND + "/products/$vid").then((resp) {
       Map<String, dynamic> data = jsonDecode(resp);
       for (var pid in data.keys) {
-        mp[int.parse(pid)] = Product.fromJson(data[pid]);
+        int p = int.parse(pid);
+        mp[p] = Product.fromJson(data[pid]);
+        if(types[mp[p].type] == null){
+          types[mp[p].type] = [];
+        }
+        types[mp[p].type].add(p);
       }
       loaded = true;
     });
