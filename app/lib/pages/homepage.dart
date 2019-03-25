@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../models/vendor.dart';
@@ -22,7 +24,19 @@ class _HomePageState extends State<HomePage> {
         done = true;
       });
     });
+    _reload();
     super.initState();
+  }
+
+  void _reload(){
+    if(widget.userModel.user == null){
+      Future.delayed(Duration(seconds: 1), (){
+        widget.userModel.reloadUser().then((_){
+          _reload();
+          setState(() {});
+        });
+      });
+    }
   }
 
   @override
@@ -47,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: RefreshIndicator(
         child: Center(
-          child: (done == false)
+          child: (done == false || widget.userModel.user == null)
               ? Text("Loading ...")
               : ListView(
                   children: <Widget>[
@@ -63,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ] +
                       vendorModel.mp.keys.map((int vid) {
-                        return VendorCard(v: vendorModel.mp[vid]);
+                        return VendorCard(v: vendorModel.mp[vid], um: widget.userModel,);
                       }).toList(),
                 ),
         ),

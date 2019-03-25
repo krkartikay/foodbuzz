@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     if (!done) {
-      return CircularProgressIndicator();
+      return Scaffold(body: Center(child: CircularProgressIndicator(),),);
     }
     return ActualLoginPage(
       login: doLogin,

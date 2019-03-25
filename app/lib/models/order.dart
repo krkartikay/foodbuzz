@@ -64,18 +64,9 @@ class CreatedOrder {
   String toJson(){
     return jsonEncode({
       'vid': vid,
-      'order': qty,
+      'order': qty.map((int pid, int qty) => MapEntry(pid.toString(), qty)),
     });
   }
-
-  // void addProduct(Product p){
-  //   qty[p.pid] ++;
-  //   totalPrice += p.price;
-  // }
-  // void removeProduct(Product p){
-  //   qty[p.pid] --;
-  //   totalPrice -= p.price;
-  // }
 
   void setQty(Product p, int val){
     qty[p.pid] = val;
@@ -87,7 +78,12 @@ class CreatedOrder {
   }
 
   Future<int> placeOrder(){
-    return Requests.post(BACKEND+"/placeOrder", json: this.toJson()).then((resp) {
+    print("order:");
+    print(this.toJson());
+    return Requests.post(BACKEND+"/placeOrder", body: {
+      'vid': vid,
+      'order': qty.map((int pid, int qty) => MapEntry(pid.toString(), qty)),
+    }).then((resp) {
       return jsonDecode(resp)['oid'];
     });
   }

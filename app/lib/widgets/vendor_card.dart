@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../pages/products.dart';
 import '../models/vendor.dart';
+import '../models/user.dart';
 import '../widgets/heading.dart';
 
 class VendorCard extends StatelessWidget {
   final Vendor v;
+  final UserModel um;
 
-  const VendorCard({Key key, this.v}) : super(key: key);
+  const VendorCard({Key key, this.v, this.um}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,7 @@ class VendorCard extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => ProductPage(
                     v: v,
+                    um: um,
                   )));
         },
       ),

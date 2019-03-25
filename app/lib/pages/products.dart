@@ -4,13 +4,15 @@ import '../pages/order_status.dart';
 import '../models/vendor.dart';
 import '../models/product.dart';
 import '../models/order.dart';
+import '../models/user.dart';
 import '../widgets/product_card.dart';
 import '../widgets/big_card.dart';
 import '../widgets/heading.dart';
 
 class ProductPage extends StatefulWidget {
   final Vendor v;
-  const ProductPage({Key key, this.v}) : super(key: key);
+  final UserModel um;
+  const ProductPage({Key key, this.v, this.um}) : super(key: key);
   @override
   _ProductPageState createState() => _ProductPageState();
 }
@@ -68,7 +70,7 @@ class _ProductPageState extends State<ProductPage> {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (BuildContext context) {
-                                  return OrderStatusPage(oid: oid);
+                                  return OrderStatusPage(oid: oid, um: widget.um);
                                 },
                               ),
                             );
