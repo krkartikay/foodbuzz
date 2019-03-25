@@ -28,15 +28,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  void _reload(){
-    if(widget.userModel.user == null){
-      Future.delayed(Duration(seconds: 1), (){
-        widget.userModel.reloadUser().then((_){
-          _reload();
-          setState(() {});
-        });
-      });
-    }
+  void _reload() {
+    widget.userModel.reloadUser().then((_) {
+      if (widget.userModel.user == null) {
+        _reload();
+      }
+      setState(() {});
+    });
   }
 
   @override
@@ -71,13 +69,17 @@ class _HomePageState extends State<HomePage> {
                             elevation: 3.0,
                             child: ListTile(
                               title: Text("Remaining Balance: "),
-                              trailing: Heading1("\$${widget.userModel.user.balance}"),
+                              trailing: Heading1(
+                                  "\$${widget.userModel.user.balance}"),
                             ),
                           ),
                         ),
                       ] +
                       vendorModel.mp.keys.map((int vid) {
-                        return VendorCard(v: vendorModel.mp[vid], um: widget.userModel,);
+                        return VendorCard(
+                          v: vendorModel.mp[vid],
+                          um: widget.userModel,
+                        );
                       }).toList(),
                 ),
         ),
@@ -85,6 +87,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             done = false;
           });
+          _reload();
           return vendorModel.loadVendors().then((_) {
             setState(() {
               done = true;
