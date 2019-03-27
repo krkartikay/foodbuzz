@@ -84,6 +84,7 @@ class CreatedOrder {
       'vid': vid,
       'order': qty.map((int pid, int qty) => MapEntry(pid.toString(), qty)),
     }).then((resp) {
+      if(jsonDecode(resp)['error'] != null) throw(jsonDecode(resp)['error']);
       return jsonDecode(resp)['oid'];
     });
   }

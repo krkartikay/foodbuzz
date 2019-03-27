@@ -63,23 +63,39 @@ class _ProductPageState extends State<ProductPage> {
                     }).toList() +
                     <Widget>[
                       PaddedText(""),
-                      BigCard(
-                        totalOrder: order.totalPrice,
-                        onConfirm: () {
-                          order.placeOrder().then((int oid) {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (BuildContext context) {
-                                  return OrderStatusPage(oid: oid, um: widget.um);
-                                },
-                              ),
-                            );
-                          });
-                        },
-                      )
+                      PriceCard(um: widget.um, order: order,)
                     ],
               ),
       ),
+    );
+  }
+}
+
+class PriceCard extends StatelessWidget {
+  final order, um;
+
+  const PriceCard({Key key, this.order, this.um}) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return BigCard(
+      totalOrder: order.totalPrice,
+      onConfirm: () {
+        order.placeOrder().then((int oid) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (BuildContext context) {
+                return OrderStatusPage(oid: oid, um: um);
+              },
+            ),
+          );
+        }).catchError((e) {
+          // showInSnackBar("login failed!");
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("$e"),
+          ));
+        });
+      },
     );
   }
 }

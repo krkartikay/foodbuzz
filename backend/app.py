@@ -115,11 +115,14 @@ def placeOrder():
 			qty = data['order'][pid]
 			qtyleft, price1 = query_db("SELECT qty_left, price FROM products WHERE pid=?", pid, one=True)
 			if qty < 0:
-				abort(400)
+				return make_error(400, "Product qty cannot be negative!")
 			if qtyleft < qty:
 				return make_error(400, "Product is unavailable!")
 			total_price += qty * price1
-
+		
+		if total_price == 0:
+			return make_error(400, "Order is empty!")
+		
 		# TODO: SOME MORE TESTING, qty > 0 etc
 		acc_balance = query_db("SELECT balance FROM users WHERE uid=?", [session['uid']], one=True)[0]
 		if acc_balance < total_price:
