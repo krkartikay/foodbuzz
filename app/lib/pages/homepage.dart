@@ -31,7 +31,9 @@ class _HomePageState extends State<HomePage> {
   void _reload() {
     widget.userModel.reloadUser().then((_) {
       if (widget.userModel.user == null) {
-        _reload();
+        Future.delayed(Duration(seconds: 1)).then((_){
+          _reload();
+        });
       }
       setState(() {});
     });

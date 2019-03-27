@@ -40,7 +40,7 @@ def make_error(status_code, message):
         'status': status_code,
         'error': message,
     })
-    response.status_code = status_code
+    # response.status_code = status_code
     return response
 
 def authorize(f):
@@ -74,7 +74,10 @@ def login():
 	data = request.get_json()
 	email = data["email"]
 	passw = data["password"]
-	uid, hash_ = query_db("SELECT uid, passwordhash FROM users WHERE email = ?", [email], one=True)
+	user = query_db("SELECT uid, passwordhash FROM users WHERE email = ?", [email], one=True)
+	if user is None:
+		return make_error(400, "No such user")
+	uid, hash_ = user
 	if check_pwd(passw, hash_):
 		session['uid'] = uid
 		return jsonify({"success": True})

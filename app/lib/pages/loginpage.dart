@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
+import './actual_login_page.dart';
 
 class LoginPage extends StatefulWidget {
   final UserModel userModel;
@@ -16,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     widget.userModel.reloadUser().then((_) {
       if (widget.userModel.loggedIn) {
+        print("Popping!");
         Navigator.of(context).pop();
       } else {
         setState(() {
@@ -33,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     return ActualLoginPage(
       login: doLogin,
-      logout: doLogout,
+      register: doRegister,
     );
   }
 
@@ -41,37 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     return widget.userModel.login(email, pass);
   }
 
-  Future<void> doLogout() {
-    return widget.userModel.logout();
-  }
-}
-
-class ActualLoginPage extends StatefulWidget {
-  final Function login;
-  final Function logout;
-
-  const ActualLoginPage({Key key, this.login, this.logout}) : super(key: key);
-
-  @override
-  _ActualLoginPageState createState() => _ActualLoginPageState();
-}
-
-class _ActualLoginPageState extends State<ActualLoginPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: RaisedButton(
-          child: Text("DO THE LOGIN"),
-          onPressed: () {
-            widget.login("kk@g.com", "hunter2").then((_) {
-              Navigator.pop(context);
-            }).catchError((_){
-              print("error logging in!");
-            });
-          },
-        ),
-      ),
-    );
+  Future<void> doRegister(String email, String pass) {
+    return widget.userModel.register(email, pass);
   }
 }

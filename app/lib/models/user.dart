@@ -29,30 +29,38 @@ class UserModel {
       if(loggedIn){
         user = User.fromJson(jsonDecode(resp)['user_data']);
       }
-    }).catchError((error){
-      print("error in reloaduser, $error");
     });
   }
 
   Future<void> login(String email, String pass){
-    print("object");
     return Requests.post(BACKEND + "/login", body: {
       'email': email,
       'password': pass,
     }).then((resp) {
       if (jsonDecode(resp)['success'] == true){
         print("login successful");
+      } else {
+        throw(jsonDecode(resp)['error']);
       }
-    }).catchError((error){
-      print("error in login, $error");
     });
   }
 
   Future<void> logout(){
     return Requests.get(
       BACKEND + "/logout",
-    ).catchError((error){
-      print("error in reloaduser, $error");
+    );
+  }
+
+  Future<void> register(String email, String pass){
+    return Requests.post(BACKEND + "/register", body: {
+      'email': email,
+      'password': pass,
+    }).then((resp) {
+      if (jsonDecode(resp)['success'] == true){
+        print("register successful");
+      }
+    }).catchError((error){
+      print("error in register, $error");
     });
   }
 }
