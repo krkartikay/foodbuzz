@@ -5,6 +5,7 @@ import '../models/user.dart';
 import '../models/vendor.dart';
 import '../widgets/vendor_card.dart';
 import '../widgets/heading.dart';
+import '../widgets/custom_wave.dart';
 
 class HomePage extends StatefulWidget {
   final UserModel userModel;
@@ -82,7 +83,9 @@ class _HomePageState extends State<HomePage> {
                           v: vendorModel.mp[vid],
                           um: widget.userModel,
                         );
-                      }).toList(),
+                      }).toList() + <Widget>[
+                        CustomWave(),
+                      ],
                 ),
         ),
         onRefresh: () {

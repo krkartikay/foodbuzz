@@ -8,6 +8,7 @@ import '../models/user.dart';
 import '../widgets/product_card.dart';
 import '../widgets/big_card.dart';
 import '../widgets/heading.dart';
+import '../widgets/custom_wave.dart';
 
 class ProductPage extends StatefulWidget {
   final Vendor v;
@@ -63,7 +64,11 @@ class _ProductPageState extends State<ProductPage> {
                     }).toList() +
                     <Widget>[
                       PaddedText(""),
-                      PriceCard(um: widget.um, order: order,)
+                      PriceCard(
+                        um: widget.um,
+                        order: order,
+                      ),
+                      CustomWave(),
                     ],
               ),
       ),
@@ -75,7 +80,7 @@ class PriceCard extends StatelessWidget {
   final order, um;
 
   const PriceCard({Key key, this.order, this.um}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return BigCard(
